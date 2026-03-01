@@ -1,0 +1,77 @@
+{
+    "ciel": {
+        "file": "ciel.wav",
+        "volume": 1.2,
+        "type": "loop"
+    },
+    "etoiles": {
+        "file": "etoiles.wav",
+        "volume": 1,
+        "type": "loop"
+    },
+    "fumee": {
+        "file": "fumee.wav",
+        "volume": 1.5,
+        "type": "loop"
+    },
+    "dune": {
+        "file": "dune.wav",
+        "volume": 1.3,
+        "type": "loop"
+    },
+    "foret": {
+        "file": "foret.wav",
+        "volume": 1,
+        "type": "loop"
+    },
+    "coffre": {
+        "file": "coffre.wav",
+        "volume": 0.8,
+        "type": "once"
+    },
+    "prairie": {
+        "file": "prairie.wav",
+        "volume": 1,
+        "type": "loop"
+    },
+    "eruption": {
+        "file": "eruption.wav",
+        "volume": 1,
+        "type": "once"
+    },
+    "sable1": {
+        "file": "sable1.wav",
+        "volume": 0.6,
+        "type": "loop"
+    },
+    "sable2": {
+        "file": "sable2.wav",
+        "volume": 0.6,
+        "type": "loop"
+    },
+    "volcan": {
+        "file": "volcan.wav",
+        "volume": 1,
+        "type": "loop"
+    },
+    "ponton": {
+        "file": "ponton.wav",
+        "volume": 1.3,
+        "type": "loop"
+    },
+    "mer": {
+        "file": "mer.wav",
+        "volume": 1,
+        "type": "loop"
+    },
+    "mer_sable": {
+        "file": "mer_sable.wav",
+        "volume": 1,
+        "type": "loop"
+    },
+    "cave": {
+        "file": "cave.wav",
+        "volume": 1.5,
+        "type": "loop"
+    }
+}
