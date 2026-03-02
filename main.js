@@ -21,6 +21,8 @@ await new Promise(resolve => {
 });
 
 textElement.innerText = "Chargement...";
+const body = document.getElementById('main');
+body.style.cursor = "progress";
 
 const fadeTime = 0.6;
 const globalGain = 3.;
@@ -28,7 +30,7 @@ const globalGain = 3.;
 // load samples in memory and start 
 for (const [name, zone] of Object.entries(map)) {
   const now = audioContext.currentTime;
-
+  console.log(zone.file);
   zone.buffer = await loadAudioBuffer(`./samples/${zone.file}`, audioContext.sampleRate);
 
   zone.gain = audioContext.createGain();
@@ -54,7 +56,8 @@ for (const [name, points] of Object.entries(polygons)) {
 }
 
 imageElement.style.opacity = 1;
-textElement.style.opacity = 0;
+textElement.remove();
+body.style.cursor = "grab";
 console.log("--- Ready to play");
 
 const turnOff = (zone, time) => {

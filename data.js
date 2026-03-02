@@ -1,76 +1,76 @@
 export const map = {
     "ciel": {
-        "file": "ciel.wav",
+        "file": "ciel.ogg",
         "volume": 1.2,
         "type": "loop"
     },
     "etoiles": {
-        "file": "etoiles.wav",
+        "file": "etoiles.ogg",
         "volume": 1,
         "type": "loop"
     },
     "fumee": {
-        "file": "fumee.wav",
+        "file": "fumee.ogg",
         "volume": 1.5,
         "type": "loop"
     },
     "dune": {
-        "file": "dune.wav",
+        "file": "dune.ogg",
         "volume": 1.3,
         "type": "loop"
     },
     "foret": {
-        "file": "foret.wav",
+        "file": "foret.ogg",
         "volume": 1,
         "type": "loop"
     },
     "coffre": {
-        "file": "coffre.wav",
+        "file": "coffre.ogg",
         "volume": 0.8,
         "type": "once"
     },
     "prairie": {
-        "file": "prairie.wav",
+        "file": "prairie.ogg",
         "volume": 1,
         "type": "loop"
     },
     "eruption": {
-        "file": "eruption.wav",
+        "file": "eruption.ogg",
         "volume": 1,
         "type": "once"
     },
     "sable1": {
-        "file": "sable1.wav",
+        "file": "sable1.ogg",
         "volume": 0.6,
         "type": "loop"
     },
     "sable2": {
-        "file": "sable2.wav",
+        "file": "sable2.ogg",
         "volume": 0.6,
         "type": "loop"
     },
     "volcan": {
-        "file": "volcan.wav",
+        "file": "volcan.ogg",
         "volume": 1,
         "type": "loop"
     },
     "ponton": {
-        "file": "ponton.wav",
+        "file": "ponton.ogg",
         "volume": 1.3,
         "type": "loop"
     },
     "mer": {
-        "file": "mer.wav",
+        "file": "mer.ogg",
         "volume": 1,
         "type": "loop"
     },
     "mer_sable": {
-        "file": "mer_sable.wav",
+        "file": "mer_sable.ogg",
         "volume": 1,
         "type": "loop"
     },
     "cave": {
-        "file": "cave.wav",
+        "file": "cave.ogg",
         "volume": 1.5,
         "type": "loop"
     }
