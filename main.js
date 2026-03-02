@@ -1,10 +1,17 @@
 import loadAudioBuffer from './load-audio-buffer.js';
-import resumeAudioContext from './resume-audio-context.js';
-import 'https://unpkg.com/@ircam/sc-components@latest';
 import { map, polygons } from './data.js';
 
 const audioContext = new AudioContext();
+
 const imageElement = document.getElementById("tapisImage");
+await imageElement.decode();
+const imageWidth = imageElement.width;
+const imageHeight = imageElement.height;
+const xOrigin = imageElement.offsetLeft;
+const yOrigin = imageElement.offsetTop;
+imageElement.style.opacity = 0.3;
+
+const textElement = document.getElementById("text");
 
 await new Promise(resolve => {
   imageElement.addEventListener("click",async (evt) => {
@@ -12,6 +19,8 @@ await new Promise(resolve => {
     resolve();
   })
 });
+
+textElement.innerText = "Chargement...";
 
 const fadeTime = 0.6;
 const globalGain = 3.;
@@ -44,59 +53,79 @@ for (const [name, points] of Object.entries(polygons)) {
   map[name].polygon = turf.polygon([closedPoly,]);
 }
 
+imageElement.style.opacity = 1;
+textElement.style.opacity = 0;
 console.log("--- Ready to play");
+
+const turnOff = (zone, time) => {
+    if (map[zone].type == "loop") {
+      const value = map[zone].gain.gain.value;
+      map[zone].gain.gain.setValueAtTime(value, time);
+      map[zone].gain.gain.linearRampToValueAtTime(0.,
+        time + fadeTime
+      );
+    }
+};
 
 // main logic: callback when receiving zone information through OSC
 var currentZones = [];
-imageElement.addEventListener("mouseover", (evt) => {
-  console.log(evt.clientX, evt.clientY);
-});
+imageElement.onmousemove = (evt) => {
+  const x = (evt.layerX - xOrigin) / imageWidth;
+  const y = (evt.layerY - yOrigin) / imageHeight;
 
-//   const newZones = [];
-//   for (const [name, zone] of Object.entries(map)) {
-//     if (turf.booleanPointInPolygon())
-//   }
-//   const now = audioContext.currentTime;
+  const newZones = [];
+  for (const [name, zone] of Object.entries(map)) {
+    const point = turf.point([x, y]);
+    if (turf.booleanPointInPolygon(point, zone.polygon)) {
+      newZones.push(name);
+    }
+  }
 
-//   // fade out previous zones that were left by user
-//   currentZones.forEach((zone) => {
-//     if (!newZones.includes(zone)) {
-//       if (map[zone].type == "loop") {
-//         const value = map[zone].gain.gain.value;
-//         map[zone].gain.gain.setValueAtTime(value, now);
-//         map[zone].gain.gain.linearRampToValueAtTime(0.,
-//           now + fadeTime
-//         );
-//       }
-//     }
-//   })
+  const now = audioContext.currentTime;
 
-//   // fade in new zones
-//   newZones.forEach((zone) => {
-//     if (!currentZones.includes(zone)) {
-//       if (map[zone].type == "loop") {
-//         const value = map[zone].gain.gain.value;
-//         map[zone].gain.gain.setValueAtTime(value, now);
-//         const gain = map[zone].volume * globalGain;
-//         map[zone].gain.gain.linearRampToValueAtTime(gain,
-//           now + fadeTime
-//         );
-//       } else {
-//         if (!map[zone].isPlaying) {
-//           map[zone].source = audioContext.createBufferSource();
-//           map[zone].source.buffer = map[zone].buffer;
-//           map[zone].source.loop = false;
-//           map[zone].source.connect(map[zone].gain);
-//           map[zone].source.start(now);
-//           map[zone].isPlaying = true;
-//           map[zone].source.onended = () => {
-//             map[zone].isPlaying = false;
-//           }
-//         }
+  // fade out previous zones that were left by user
+  currentZones.forEach((zone) => {
+    if (!newZones.includes(zone)) {
+      turnOff(zone, now);
+    }
+  });
+
+  // fade in new zones
+  newZones.forEach((zone) => {
+    if (!currentZones.includes(zone)) {
+      if (map[zone].type == "loop") {
+        const value = map[zone].gain.gain.value;
+        map[zone].gain.gain.setValueAtTime(value, now);
+        const gain = map[zone].volume * globalGain;
+        map[zone].gain.gain.linearRampToValueAtTime(gain,
+          now + fadeTime
+        );
+      } else {
+        if (!map[zone].isPlaying) {
+          map[zone].source = audioContext.createBufferSource();
+          map[zone].source.buffer = map[zone].buffer;
+          map[zone].source.loop = false;
+          map[zone].source.connect(map[zone].gain);
+          map[zone].source.start(now);
+          map[zone].isPlaying = true;
+          map[zone].source.onended = () => {
+            map[zone].isPlaying = false;
+          }
+        }
         
-//       }
-//     }
-//   });
+      }
+    }
+  });
 
-//   currentZones = newZones;
-// })
+  currentZones = newZones;
+};
+
+imageElement.onmouseleave = (evt) => {
+  const now = audioContext.currentTime;
+
+  currentZones.forEach((zone) => {
+    turnOff(zone);
+  });
+
+  currentZones = [];
+}
