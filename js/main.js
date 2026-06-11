@@ -31,7 +31,7 @@ const globalGain = 3.;
 for (const [name, zone] of Object.entries(map)) {
   const now = audioContext.currentTime;
   console.log(zone.file);
-  zone.buffer = await loadAudioBuffer(`./samples/${zone.file}`, audioContext.sampleRate);
+  zone.buffer = await loadAudioBuffer(`../assets/samples/${zone.file}`, audioContext.sampleRate);
 
   zone.gain = audioContext.createGain();
   zone.gain.connect(audioContext.destination);
@@ -127,7 +127,7 @@ imageElement.onmouseleave = (evt) => {
   const now = audioContext.currentTime;
 
   currentZones.forEach((zone) => {
-    turnOff(zone);
+    turnOff(zone, now);
   });
 
   currentZones = [];
