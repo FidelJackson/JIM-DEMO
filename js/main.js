@@ -1,8 +1,10 @@
-import loadAudioBuffer from './load-audio-buffer.js';
 import { map, polygons } from './data.js';
+import AudioEngine from './audio.js'
 
+// Create audioContext
 const audioContext = new AudioContext();
 
+// Wait for image to be fully loaded, get properties and apply opacity
 const imageElement = document.getElementById("tapisImage");
 await imageElement.decode();
 const imageWidth = imageElement.width;
@@ -11,71 +13,42 @@ const xOrigin = imageElement.offsetLeft;
 const yOrigin = imageElement.offsetTop;
 imageElement.style.opacity = 0.3;
 
+// Get text element once loaded
 const textElement = document.getElementById("text");
 
+// Await user interaction
 await new Promise(resolve => {
   imageElement.addEventListener("click",async (evt) => {
     await audioContext.resume();
     resolve();
   })
 });
-
 textElement.innerText = "Chargement...";
 const body = document.getElementById('main');
 body.style.cursor = "progress";
 
-const fadeTime = 0.6;
-const globalGain = 3.;
-
-// load samples in memory and start 
-for (const [name, zone] of Object.entries(map)) {
-  const now = audioContext.currentTime;
-  console.log(zone.file);
-  zone.buffer = await loadAudioBuffer(`../assets/samples/${zone.file}`, audioContext.sampleRate);
-
-  zone.gain = audioContext.createGain();
-  zone.gain.connect(audioContext.destination);
-
-  if (zone.type === "loop") {
-    zone.source = audioContext.createBufferSource();
-    zone.source.buffer = zone.buffer;
-    zone.source.loop = true;
-    zone.source.connect(zone.gain);
-    zone.source.start(now);
-    zone.isPlaying = false;
-    zone.gain.gain.setValueAtTime(0., now);
-  } else {
-    zone.gain.gain.setValueAtTime(zone.volume * globalGain, now);
-  }
-}
-
+// Prepare map polygons
 for (const [name, points] of Object.entries(polygons)) {
   const closedPoly = points.concat([points[0],]);
-  console.log(name);
+  console.log("polygon", name, "ready");
   map[name].polygon = turf.polygon([closedPoly,]);
 }
 
+// Initialize audio engine
+const audioEngine = new AudioEngine(audioContext, map);
+await audioEngine.loadSamples();
+
+// Update UI when ready to play
 imageElement.style.opacity = 1;
 textElement.remove();
 body.style.cursor = "grab";
 console.log("--- Ready to play");
 
-const turnOff = (zone, time) => {
-    if (map[zone].type == "loop") {
-      const value = map[zone].gain.gain.value;
-      map[zone].gain.gain.setValueAtTime(value, time);
-      map[zone].gain.gain.linearRampToValueAtTime(0.,
-        time + fadeTime
-      );
-    }
-};
 
-// main logic: callback when receiving zone information through OSC
-var currentZones = [];
+// Main logic: callback when receiving zone information through OSC
 imageElement.onmousemove = (evt) => {
   const x = (evt.layerX - xOrigin) / imageWidth;
   const y = (evt.layerY - yOrigin) / imageHeight;
-
   const newZones = [];
   for (const [name, zone] of Object.entries(map)) {
     const point = turf.point([x, y]);
@@ -83,52 +56,9 @@ imageElement.onmousemove = (evt) => {
       newZones.push(name);
     }
   }
-
-  const now = audioContext.currentTime;
-
-  // fade out previous zones that were left by user
-  currentZones.forEach((zone) => {
-    if (!newZones.includes(zone)) {
-      turnOff(zone, now);
-    }
-  });
-
-  // fade in new zones
-  newZones.forEach((zone) => {
-    if (!currentZones.includes(zone)) {
-      if (map[zone].type == "loop") {
-        const value = map[zone].gain.gain.value;
-        map[zone].gain.gain.setValueAtTime(value, now);
-        const gain = map[zone].volume * globalGain;
-        map[zone].gain.gain.linearRampToValueAtTime(gain,
-          now + fadeTime
-        );
-      } else {
-        if (!map[zone].isPlaying) {
-          map[zone].source = audioContext.createBufferSource();
-          map[zone].source.buffer = map[zone].buffer;
-          map[zone].source.loop = false;
-          map[zone].source.connect(map[zone].gain);
-          map[zone].source.start(now);
-          map[zone].isPlaying = true;
-          map[zone].source.onended = () => {
-            map[zone].isPlaying = false;
-          }
-        }
-        
-      }
-    }
-  });
-
-  currentZones = newZones;
+  audioEngine.update(newZones);
 };
 
 imageElement.onmouseleave = (evt) => {
-  const now = audioContext.currentTime;
-
-  currentZones.forEach((zone) => {
-    turnOff(zone, now);
-  });
-
-  currentZones = [];
+  audioEngine.turnOffAll();
 }
