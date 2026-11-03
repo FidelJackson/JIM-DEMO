@@ -4,3 +4,26 @@
     local("Trickster"),
     url("../fonts/font2.otf") 
 }
+
+#imageWrapper {
+  position: relative;
+  width: 90vw;
+  margin: 0 auto;
+}
+
+#tapisImage {
+  width: 100%;
+  display: block;
+}
+
+#dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: red;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  left: 50%;
+  top: 50%;
+}

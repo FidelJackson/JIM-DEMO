@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JIM 2026 Démo</title>
+  <script src="./js/turf.min.js" charset="utf-8"></script>
+  <script type="module" defer src="./js/main_ws_in.js"></script>
+  <link rel="stylesheet" type="text/css" href="./css/styles.css" />
+</head>
+
+<body id="main" style="cursor: pointer">
+
+  <div id="imageWrapper">
+    <div id="text" style="
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: Saonara;
+      font-size: 34pt;
+      z-index: 2;
+    ">
+      Cliquez ici
+    </div>
+
+    <img src="./assets/tapis.png" id="tapisImage"/>
+
+    <!-- 👇 movable dot -->
+    <div id="dot"></div>
+  </div>
+
+</body>
+</html>

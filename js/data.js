@@ -36,7 +36,7 @@ export const map = {
     },
     "eruption": {
         "file": "eruption.ogg",
-        "volume": 1,
+        "volume": 0.5,
         "type": "once"
     },
     "sable1": {
@@ -61,7 +61,7 @@ export const map = {
     },
     "mer": {
         "file": "mer.ogg",
-        "volume": 1,
+        "volume": 0.7,
         "type": "loop"
     },
     "mer_sable": {

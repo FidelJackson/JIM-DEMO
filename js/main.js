@@ -36,7 +36,7 @@ for (const [name, points] of Object.entries(polygons)) {
 
 // Initialize audio engine
 const audioEngine = new AudioEngine(audioContext, map);
-await audioEngine.loadSamples();
+await audioEngine.initialize();
 
 // Update UI when ready to play
 imageElement.style.opacity = 1;
@@ -49,14 +49,16 @@ console.log("--- Ready to play");
 imageElement.onmousemove = (evt) => {
   const x = (evt.layerX - xOrigin) / imageWidth;
   const y = (evt.layerY - yOrigin) / imageHeight;
+  const point = turf.point([x, y]);
   const newZones = [];
   for (const [name, zone] of Object.entries(map)) {
-    const point = turf.point([x, y]);
     if (turf.booleanPointInPolygon(point, zone.polygon)) {
+      // console.log(name, turf.pointToPolygonDistance(point, zone.polygon));
       newZones.push(name);
     }
   }
-  audioEngine.update(newZones);
+  audioEngine.zoneUpdate(newZones);
+  audioEngine.positionUpdate(point);
 };
 
 imageElement.onmouseleave = (evt) => {
