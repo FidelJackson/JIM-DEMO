@@ -3,8 +3,9 @@ import whiteNoiseNode from './white-noise.js';
 import lowpassFilter from './filters.js';
 
 export default class AudioEngine {
-    constructor(audioContext, map) {
+    constructor(audioContext, map, path) {
         this.audioContext = audioContext;
+        this.path = path
         this.map = map;
         this.currentZones = []; 
         this.fadeTime = 0.6;
@@ -22,7 +23,8 @@ export default class AudioEngine {
         for (const [name, zone] of Object.entries(this.map)) {
           const now = this.audioContext.currentTime;
           console.log(zone.file);
-          zone.buffer = await loadAudioBuffer(`../assets/samples/${zone.file}`, this.audioContext.sampleRate);
+          const path = new URL(`../assets/samples/${zone.file}`, import.meta.url);
+          zone.buffer = await loadAudioBuffer(path, this.audioContext.sampleRate);
         
           zone.gain = this.audioContext.createGain();
           zone.gain.connect(this.audioContext.destination);
